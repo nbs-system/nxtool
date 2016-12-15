@@ -60,7 +60,6 @@ def __create_argparser():
     actions.add_argument('--filter', action='store')
     actions.add_argument('--filter-regexp', action='store')
     actions.add_argument('--stats', action='store_true')
-    actions.add_argument('--min-occurrences', type=str)
 
     return parser.parse_args()
 
