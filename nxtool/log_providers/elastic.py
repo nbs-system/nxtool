@@ -195,7 +195,7 @@ class Elastic(LogProvider):
             count += 1
         try:
             self.client.bulk(body=items)
-        except:
+        except TransportError:
             for meta, item in zip(items[0::2], items[1::2]): #We build tuples in items (items[0], items[1]), (items[2], items[3]) ...
                 self.client.bulk(body=[meta, item])
 
