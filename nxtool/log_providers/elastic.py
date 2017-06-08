@@ -7,7 +7,6 @@ import json
 import datetime
 
 from functools import partial
-from itertools import izip
 
 try:  # Fuck you guido for removing reduce
     # noinspection PyUnresolvedReferences
@@ -20,7 +19,6 @@ try:
 except ImportError:  # python3
     from configparser import ConfigParser
 
-#from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.connections import connections
 
