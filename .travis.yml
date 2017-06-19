@@ -47,6 +47,7 @@ script:
       ;;
     *)
       travis_terminate 1
+      ;;
     esac'
   - pip install -r requirements.txt
   - pip install coveralls nose2 nose2-cov
