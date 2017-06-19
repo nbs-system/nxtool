@@ -9,7 +9,13 @@ python:
   - "3.5"
   - "3.5-dev"
   - "nightly"
-
+env:
+  matrix:
+    - ES_VERSION=5.4.1
+    - ES_VERSION=5.3.3
+    - ES_VERSION=2.4.5
+    - ES_VERSION=1.7.5
+    
 script:
   - pip install -r requirements.txt
   - pip install coveralls nose2 nose2-cov
