@@ -30,8 +30,17 @@ nxtool-ng is released under the [GPL]( https://gnu.org/licenses/gpl.html ).
 Nxtool-ng depends on [nxapi](https://github.com/nbs-system/nxapi) for naxsi-related magic,
 and optionally on [elasticsearch-dsl]( https://github.com/elastic/elasticsearch-dsl-py )
 if you want to generate rules from an Elastic instance. You can install them with
-`pip install -r ./requirements.txt`.
 
+### Elasticsearch 5.x
+33
+̀pip install 'elasticsearch-dsl>=5.0,<6.0'
+34
+​
+35
+### Elasticsearch 2.x
+36
+pip install 'elasticsearch-dsl>=2.0,<3.0'
+`pip install -r ./requirements.txt`.
 # Usage
 
 ```bash
