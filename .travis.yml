@@ -20,9 +20,13 @@ addons:
 env:
   matrix:
     - ES_VERSION=5.4.1
+      DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
     - ES_VERSION=5.3.3
+      DOWNLOAD_URL=https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
     - ES_VERSION=2.4.5
+      DOWNLOAD_URL=https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${ES_VERSION}/elasticsearch-${ES_VERSION}.tar.gz
     - ES_VERSION=1.7.6
+      DOWNLOAD_URL=https://www.elastic.co/downloads/past-releases/elasticsearch-${ES_VERSION}
     
 install:
   - mkdir /tmp/elasticsearch
