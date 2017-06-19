@@ -29,7 +29,7 @@ env:
       DOWNLOAD_URL=https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-${ES_VERSION}.tar.gz
 install:
   - mkdir /tmp/elasticsearch
-  - wget -O - https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${ES_VERSION}/elasticsearch-${ES_VERSION}.tar.gz | tar xz --directory=/tmp/elasticsearch --strip-components=1
+  - wget -O - ${DOWNLOAD_URL} | tar xz --directory=/tmp/elasticsearch --strip-components=1
   - /tmp/elasticsearch/bin/elasticsearch -d
   - pip install git+https://github.com/elastic/elasticsearch-py.git#egg=elasticsearch
   
