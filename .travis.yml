@@ -22,7 +22,7 @@ env:
     - ES_VERSION=5.4.1
     - ES_VERSION=5.3.3
     - ES_VERSION=2.4.5
-    - ES_VERSION=1.7.5
+    - ES_VERSION=1.7.6
     
 install:
   - mkdir /tmp/elasticsearch
