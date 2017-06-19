@@ -46,7 +46,7 @@ script:
       pip install  "elasticsearch>=1.0.0,<2.0.0"|| travis_terminate 1
       ;;
     *)
-      ravis_terminate 1
+      travis_terminate 1
     esac)'
   - pip install -r requirements.txt
   - pip install coveralls nose2 nose2-cov
