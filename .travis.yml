@@ -9,6 +9,12 @@ python:
   - "3.5"
   - "3.5-dev"
   - "nightly"
+  
+addons:
+  apt:
+    packages:
+      -  openjdk-8-jre
+    
 env:
   matrix:
     - ES_VERSION=5.4.1
