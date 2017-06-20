@@ -71,8 +71,8 @@ class TestElastic(unittest.TestCase):
 
 class TestElasticImport(unittest.TestCase):
     def test_elastic_import(self):
-        source = flat_file.FlatFile('../tests/data/exlog.txt')
-        dest = elastic.Elastic(config_file="../config.cfg")
+        source = flat_file.FlatFile('./tests/data/exlog.txt')
+        dest = elastic.Elastic()
         for log in source.logs:
             dest.insert([log])
         dest.stop()
