@@ -78,5 +78,5 @@ class TestElasticImport(unittest.TestCase):
         dest.stop()
         dest.initialize_search()
         dest.minimum_occurences = 0
-        self.assertEqual(dest.get_relevant_ids(), {1302, 42000227})
+        self.assertEqual(dest.get_relevant_ids(['id']), {1302, 42000227})
 
