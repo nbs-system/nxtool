@@ -189,9 +189,6 @@ class Elastic(LogProvider):
             entry['whitelisted'] = "false"
             entry['comments'] = "import:"+str(datetime.datetime.now())
             # go utf-8 ?
-            for x in entry.keys():
-                if isinstance(entry[x], str):
-                    entry[x] = entry[x].encode('utf8')
             items.append(entry)
             count += 1
         try:
