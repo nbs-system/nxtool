@@ -32,14 +32,11 @@ and optionally on [elasticsearch-dsl]( https://github.com/elastic/elasticsearch-
 if you want to generate rules from an Elastic instance. You can install them with
 
 ### Elasticsearch 5.x
-33
-̀pip install 'elasticsearch-dsl>=5.0,<6.0'
-34
-​
-35
-### Elasticsearch 2.x
-36
-pip install 'elasticsearch-dsl>=2.0,<3.0'
+`pip install 'elasticsearch-dsl>=5.0,<6.0`
+
+​### Elasticsearch 2.x
+`pip install 'elasticsearch-dsl>=2.0,<3.0`
+
 `pip install -r ./requirements.txt`.
 # Usage
 
