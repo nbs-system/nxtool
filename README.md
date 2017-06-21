@@ -34,10 +34,13 @@ if you want to generate rules from an Elastic instance. You can install them wit
 ### Elasticsearch 5.x
 `pip install 'elasticsearch-dsl>=5.0,<6.0`
 
-​### Elasticsearch 2.x
+### Elasticsearch 2.x
 `pip install 'elasticsearch-dsl>=2.0,<3.0`
 
+The other requirements can be installed with
+
 `pip install -r ./requirements.txt`.
+
 # Usage
 
 ```bash
