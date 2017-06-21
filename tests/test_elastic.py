@@ -1,4 +1,5 @@
 import unittest
+import time
 
 from nxtool.log_providers import elastic
 from nxtool.log_providers import flat_file
@@ -63,11 +64,12 @@ class TestElastic(unittest.TestCase):
 
     def test_get_results(self):
         parser = elastic.Elastic()
-        parser.search.scan = lambda : None
+        parser.search.scan = lambda: None
         parser.add_filters({'pif': 'paf'})
         filters = parser.get_filters()
         parser.get_results()
         self.assertEqual(parser.get_filters(), filters)
+
 
 class TestElasticImport(unittest.TestCase):
     def test_elastic_import(self):
@@ -78,5 +80,6 @@ class TestElasticImport(unittest.TestCase):
         dest.stop()
         dest.initialize_search()
         dest.minimum_occurences = 0
+        dest.percentage = 0
+        time.sleep(5)
         self.assertEqual(dest.get_relevant_ids(['id']), {1302, 42000227})
-
