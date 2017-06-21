@@ -1,4 +1,5 @@
 from __future__ import print_function
+from __future__ import unicode_literals
 import logging
 import operator
 import collections
@@ -190,7 +191,7 @@ class Elastic(LogProvider):
             # go utf-8 ?
             for x in entry.keys():
                 if isinstance(entry[x], str):
-                    entry[x] = unicode(entry[x], errors='replace')
+                    entry[x] = entry[x].encode('utf8')
             items.append(entry)
             count += 1
         try:
