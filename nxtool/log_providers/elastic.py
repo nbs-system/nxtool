@@ -3,11 +3,7 @@ from __future__ import unicode_literals
 import logging
 import operator
 import collections
-import hashlib
-import json
 import datetime
-
-from functools import partial
 
 try:  # Fuck you guido for removing reduce
     # noinspection PyUnresolvedReferences
@@ -20,10 +16,34 @@ try:
 except ImportError:  # python3
     from configparser import ConfigParser
 
-from elasticsearch_dsl import Search, Q
+from elasticsearch import TransportError
+from elasticsearch_dsl import Search, Q, Index
+from elasticsearch_dsl import DocType, Date, Boolean, String, Integer, Ip, GeoPoint
 from elasticsearch_dsl.connections import connections
 
 from nxtool.log_providers import LogProvider
+
+
+class Event(DocType):
+    ip = String()   ## Ip() seems not to be supported in old version of elasticsearch
+    server = String()
+    learning = Boolean()
+    vers = String()
+    total_processed = Integer()
+    total_blocked = Integer()
+    blocked = Boolean()
+    cscore0 = String()
+    score0 = Integer()
+    zone = String()
+    id = Integer()
+    var_name = String()
+    date = Date()
+    whitelisted = Boolean()
+    comments = String()
+    coords = GeoPoint()
+
+    def __init__(self):
+        super(Event, self).__init__()
 
 
 class Elastic(LogProvider):
@@ -51,8 +71,11 @@ class Elastic(LogProvider):
         use_ssl = config.getboolean('elastic', 'use_ssl')
         host = config.get('elastic', 'host')
         self.doc_type = config.get('elastic', 'doc_type')
-        
         self.client = connections.create_connection(hosts=[host], use_ssl=use_ssl, index=self.index, version=self.version, timeout=30, retry_on_timeout=True )
+
+        events = Index(self.index)
+        events.doc_type(Event)
+        Event.init()
         self.initialize_search()
 
     def initialize_search(self):
@@ -181,22 +204,29 @@ class Elastic(LogProvider):
         self.total_objs += len(self.nlist)
         count = 0
         full_body = ""
-        items = []
+        items = list()
+        events = list()
         for entry in self.nlist:
-            items.append({"index" : {
-                "_index": self.index,
-                "_type" : "events"}})
-            entry['whitelisted'] = "false"
-            entry['comments'] = "import:"+str(datetime.datetime.now())
-            # go utf-8 ?
-            items.append(entry)
+            items.append({"index": {
+                          "_index": self.index,
+                          "_type": "events"}})
+
+            event = Event()
+            for key, value in entry.items():
+                setattr(event, key, value)
+
+            event.whitelisted = False
+            event.comments = "import on"+str(datetime.datetime.now())
+            items.append(event.to_dict(include_meta=True))
+            events.append(event)
             count += 1
         try:
-            self.client.bulk(body=items)
-        except TransportError:
-            for meta, item in zip(items[0::2], items[1::2]): #We build tuples in items (items[0], items[1]), (items[2], items[3]) ...
-                self.client.bulk(body=[meta, item])
-
+            self.client.bulk(items)
+        except TransportError as e:
+           logging.warning("We encountered an error trying to continue.")
+           for event in events:
+               event.save()
+               
         self.total_commits += count
         logging.debug("Written "+str(self.total_commits)+" events")
         del self.nlist[0:len(self.nlist)]
