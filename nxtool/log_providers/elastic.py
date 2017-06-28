@@ -153,7 +153,8 @@ class Elastic(LogProvider):
 
         ret = set()
         search = self.search
-        ids = set(int(i['id']) for i in self.search.execute())  # get all possible ID
+        print(self.search.execute())
+        ids = set(i['_source']['id'] for i in self.search.execute())  # get all possible ID
         self.search = search
 
         for _id in ids:
@@ -166,9 +167,9 @@ class Elastic(LogProvider):
             fields_counter = collections.defaultdict(int)
             for res in self.search.execute():
                 for field in fields:
-                    if res[field] not in data[field]:
+                    if res['_source'][field] not in data[field]:
                         fields_counter[field] += 1.0
-                    data[field].add(res[field])
+                    data[field].add(res['_source'][field])
 
             # Ignore id that are present on less than 10% of different values of each fields
             for field, content in data.items():
