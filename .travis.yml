@@ -45,7 +45,7 @@ script:
       pip install  "elasticsearch-dsl>=2.0.0,<3.0.0" || travis_terminate 1
       ;;
     1.7.6)
-      pip install  "elasticsearch-dsl>=1.0.0,<2.0.0"|| travis_terminate 1
+      pip install  "elasticsearch-dsl<2.0.0"|| travis_terminate 1
       ;;
     *)
       travis_terminate 1
