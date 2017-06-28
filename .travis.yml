@@ -16,7 +16,7 @@ python:
 addons:
   apt:
     packages:
-      - openjdk-7-jre
+      - openjdk-8-jre
     
 env:
   matrix:
