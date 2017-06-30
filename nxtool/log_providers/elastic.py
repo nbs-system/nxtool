@@ -52,8 +52,6 @@ class Elastic(LogProvider):
 
         self.percentage=10.0
         self.minimum_occurrences=250
-        
-        config = ConfigParser({'host': '127.0.0.1', 'use_ssl': True, 'index': 'nxapi', 'version': 2})
 
 # The ConfigParser documentation points out that there's no way to force defaults config option
 # outside the "DEFAULT" section.
@@ -79,7 +77,7 @@ class Elastic(LogProvider):
         self.initialize_search()
 
     def initialize_search(self):
-        self.search = Search(using=self.client, index=self.index, doc_type=self.doc_type).extra(size=10000)
+        self.search = Search(using=self.client, index=self.index).extra(size=10000)
         
     def export_search(self):
         return self.search
@@ -153,8 +151,7 @@ class Elastic(LogProvider):
 
         ret = set()
         search = self.search
-        print(self.search.execute())
-        ids = set(i['_source']['id'] for i in self.search.execute())  # get all possible ID
+        ids = set(i['id'] for i in self.search.execute())  # get all possible ID
         self.search = search
 
         for _id in ids:
@@ -167,9 +164,9 @@ class Elastic(LogProvider):
             fields_counter = collections.defaultdict(int)
             for res in self.search.execute():
                 for field in fields:
-                    if res['_source'][field] not in data[field]:
+                    if res[field] not in data[field]:
                         fields_counter[field] += 1.0
-                    data[field].add(res['_source'][field])
+                    data[field].add(res[field])
 
             # Ignore id that are present on less than 10% of different values of each fields
             for field, content in data.items():
@@ -188,7 +185,7 @@ class Elastic(LogProvider):
         return ret
 
     def reset_filters(self):
-        self.search = Search(using=self.client, index=self.index, doc_type=self.doc_type).extra(size=10000)
+        self.search = Search(using=self.client, index=self.index).extra(size=10000)
 
     def get_results(self):
         """
@@ -204,25 +201,21 @@ class Elastic(LogProvider):
         """Process list of dict (yes) and push them to DB """
         self.total_objs += len(self.nlist)
         count = 0
-        full_body = ""
-        items = list()
+
         events = list()
         for entry in self.nlist:
-            items.append({"index": {
-                          "_index": self.index,
-                          "_type": "events"}})
-
             event = Event()
             for key, value in entry.items():
                 setattr(event, key, value)
 
             event.whitelisted = False
             event.comments = "import on"+str(datetime.datetime.now())
-            items.append(event.to_dict(include_meta=True))
             events.append(event)
             count += 1
+
+        actions = (item for items in [[{'index': {'_index': 'nxapi', '_type': 'events'}}, d.to_dict()] for d in events] for item in items)
         try:
-            self.client.bulk(items)
+            ret = self.client.bulk(actions) ## ToDo parse ret to selectively loop over events to events.save() whatever happens
         except TransportError as e:
            logging.warning("We encountered an error trying to continue.")
            for event in events:
