@@ -68,6 +68,8 @@ class Elastic(LogProvider):
         self.doc_type = config.get('elastic', 'doc_type')
         self.client = connections.create_connection(hosts=[host], use_ssl=use_ssl, index=self.index, version=self.version, timeout=30, retry_on_timeout=True )
 
+        index = Index(self.index)
+        index.doc_type(Event)
         Event.init()
         self.initialize_search()
 
