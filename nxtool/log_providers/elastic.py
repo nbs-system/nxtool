@@ -44,7 +44,7 @@ class Event(DocType):
     class Meta:
         doc_type = 'events'
         ## ToDo change the hardcoded events used when saved is used
-        ## elasticsearch_dsl issue 689
+        ## elasticsearch_dsl issue 689
 
 
 
@@ -229,7 +229,7 @@ class Elastic(LogProvider):
             for event in events:
                 event.save(using=self.client)
                 ## ToDo find a way to change the hardcoded 'events' for ES doctype
-                ## Issue 689
+                ## elasticsearch_dsl Issue 689
                
         self.total_commits += count
         logging.debug("Written "+str(self.total_commits)+" events")
