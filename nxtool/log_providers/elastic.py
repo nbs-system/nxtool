@@ -25,7 +25,7 @@ from nxtool.log_providers import LogProvider
 
 
 class Event(DocType):
-    ip = Ip()   ## Ip() seems not to be supported in old version of elasticsearch
+    ip = Ip()
     server = String()
     learning = Boolean()
     vers = String()
