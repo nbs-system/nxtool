@@ -42,9 +42,6 @@ class Event(DocType):
     comments = String()
     coords = GeoPoint()
 
-    def __init__(self):
-        super(Event, self).__init__()
-
 
 class Elastic(LogProvider):
     def __init__(self, config_file='config.cfg'):
@@ -71,8 +68,6 @@ class Elastic(LogProvider):
         self.doc_type = config.get('elastic', 'doc_type')
         self.client = connections.create_connection(hosts=[host], use_ssl=use_ssl, index=self.index, version=self.version, timeout=30, retry_on_timeout=True )
 
-        events = Index(self.index)
-        events.doc_type(Event)
         Event.init()
         self.initialize_search()
 
