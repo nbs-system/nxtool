@@ -17,12 +17,11 @@ except ImportError:  # python3
     from configparser import ConfigParser
 
 from elasticsearch import TransportError
-from elasticsearch_dsl import Search, Q, Index
+from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl import DocType, Date, Boolean, String, Integer, Ip, GeoPoint
 from elasticsearch_dsl.connections import connections
 
 from nxtool.log_providers import LogProvider
-
 
 class Event(DocType):
     ip = Ip()
@@ -41,6 +40,12 @@ class Event(DocType):
     whitelisted = Boolean()
     comments = String()
     coords = GeoPoint()
+
+    class Meta:
+        doc_type = 'events'
+        ## ToDo change the hardcoded events used when saved is used
+        ## elasticsearch_dsl issue 689
+
 
 
 class Elastic(LogProvider):
@@ -66,11 +71,9 @@ class Elastic(LogProvider):
         use_ssl = config.getboolean('elastic', 'use_ssl')
         host = config.get('elastic', 'host')
         self.doc_type = config.get('elastic', 'doc_type')
-        self.client = connections.create_connection(hosts=[host], use_ssl=use_ssl, index=self.index, version=self.version, timeout=30, retry_on_timeout=True )
+        self.client = connections.create_connection(hosts=[host], use_ssl=use_ssl, index=self.index, version=self.version, doc_type=self.doc_type, timeout=30, retry_on_timeout=True )
 
-        index = Index(self.index)
-        index.doc_type(Event)
-        Event.init()
+        Event.init(index=self.index)
         self.initialize_search()
 
     def initialize_search(self):
@@ -199,9 +202,17 @@ class Elastic(LogProvider):
         self.total_objs += len(self.nlist)
         count = 0
 
+        def gen_events(events):
+            dicts = list()
+            for d in events:
+                dicts.extend([{'index': {'_index': 'nxapi', '_type': 'events'}}, d.to_dict()])
+                yield dicts.pop(-2)
+                yield dicts.pop(-1)
+
+
         events = list()
         for entry in self.nlist:
-            event = Event()
+            event = Event(_index=self.index)
             for key, value in entry.items():
                 setattr(event, key, value)
 
@@ -210,13 +221,15 @@ class Elastic(LogProvider):
             events.append(event)
             count += 1
 
-        actions = (item for items in [[{'index': {'_index': 'nxapi', '_type': 'events'}}, d.to_dict()] for d in events] for item in items)
         try:
-            ret = self.client.bulk(actions) ## ToDo parse ret to selectively loop over events to events.save() whatever happens
+            ret = self.client.bulk(gen_events(events))
+            ## ToDo parse ret to selectively loop over events to events.save() whatever happens
         except TransportError as e:
-           logging.warning("We encountered an error trying to continue.")
-           for event in events:
-               event.save()
+            logging.warning("We encountered an error trying to continue.")
+            for event in events:
+                event.save(using=self.client)
+                ## ToDo find a way to change the hardcoded 'events' for ES doctype
+                ## Issue 689
                
         self.total_commits += count
         logging.debug("Written "+str(self.total_commits)+" events")
