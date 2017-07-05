@@ -72,14 +72,21 @@ class TestElastic(unittest.TestCase):
 
 
 class TestElasticImport(unittest.TestCase):
-    def test_elastic_import(self):
+    def feed_es(self):
         source = flat_file.FlatFile('./tests/data/exlog.txt')
-        dest = elastic.Elastic()
+        self.dest = elastic.Elastic()
         for log in source.logs:
-            dest.insert([log])
-        dest.stop()
-        dest.initialize_search()
-        dest.minimum_occurences = 0
-        dest.percentage = 0
+            self.dest.insert([log])
+        self.dest.stop()
+        self.dest.initialize_search()
+
+    def clean_es(self):
+        self.dest.client.indices.delete(index=self.dest.index, ignore=[400, 404])
+
+    def test_elastic_import(self):
+        self.feed_es()
+        self.minimum_occurences = 0
+        self.pourcentage = 0
         time.sleep(5)
-        self.assertEqual(dest.get_relevant_ids(['id']), {u'1302', u'42000227'})
+        self.assertEqual(self.dest.get_relevant_ids(['id']), {u'1302', u'42000227'})
+        self.clean_es()

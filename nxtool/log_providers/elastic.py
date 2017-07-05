@@ -19,6 +19,7 @@ except ImportError:  # python3
 from elasticsearch import TransportError
 from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl import DocType, Date, Boolean, String, Integer, Ip, GeoPoint
+from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections
 
 from nxtool.log_providers import LogProvider
@@ -74,6 +75,8 @@ class Elastic(LogProvider):
         self.client = connections.create_connection(hosts=[host], use_ssl=use_ssl, index=self.index, version=self.version, doc_type=self.doc_type, timeout=30, retry_on_timeout=True )
 
         Event.init(index=self.index)
+        index = Index(self.index, using=self.client)
+        index.doc_type(Event)
         self.initialize_search()
 
     def initialize_search(self):
