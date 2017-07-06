@@ -45,7 +45,7 @@ class Event(DocType):
     var_name = Keyword()
     date = Date()
     whitelisted = Boolean()
-    uri = Text(fields={'raw': Keyword()})
+    uri = Text(fields={'raw': Keyword(index = 'not_analyzed')})
     server = Text(fields={'raw': Keyword()})
     comments = Text(fields={'raw': Keyword()})
     vers = Text(fields={'raw': Keyword()})
@@ -148,7 +148,7 @@ class Elastic(LogProvider):
             field = ''.join((field, '.raw'))
 
         if VERSION < (5, 0, 0):
-            self.search = self.search.params(search_type='count')
+            self.search = self.search.params(search_type='count', default_operator='AND')
         else:
             self.search = self.search.params(search_type='query_then_fetch')
         # This documented at https://elasticsearch-py.readthedocs.io/en/master/api.html#elasticsearch.Elasticsearch.search
