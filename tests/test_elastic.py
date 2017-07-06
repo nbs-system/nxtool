@@ -72,9 +72,13 @@ class TestElastic(unittest.TestCase):
 
 
 class TestElasticImport(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super(TestElasticImport, self).__init__(*args, **kwargs)
+        self.dest = elastic.Elastic()
+        time.sleep(5)
+
     def feed_es(self):
         source = flat_file.FlatFile('./tests/data/exlog.txt')
-        self.dest = elastic.Elastic()
         for log in source.logs:
             self.dest.insert([log])
         self.dest.stop()
@@ -93,5 +97,5 @@ class TestElasticImport(unittest.TestCase):
 
     def test_get_top(self):
         self.feed_es()
-        self.assertEqual(self.dest.get_top(['id']), {1302: 3, 42000227: 1})
+        self.assertEqual(self.dest.get_top('id'), {1302: 3, 42000227: 1})
         self.clean_es()
