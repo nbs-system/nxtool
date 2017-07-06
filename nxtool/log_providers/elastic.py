@@ -18,7 +18,7 @@ except ImportError:  # python3
 
 from elasticsearch import TransportError
 from elasticsearch_dsl import Search, Q
-from elasticsearch_dsl import DocType, Date, Boolean, Text, Integer, Ip, GeoPoint, Keyword
+from elasticsearch_dsl import DocType, Date, Boolean, String, Integer, Ip, GeoPoint, Keyword
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections
 
@@ -26,9 +26,9 @@ from nxtool.log_providers import LogProvider
 
 class Event(DocType):
     ip = Ip()
-    server = Text(fields={'raw': Keyword()})
+    server = String(fields={'raw': Keyword()})
     learning = Boolean()
-    vers = Text(fields={'raw': Keyword()})
+    vers = String(fields={'raw': Keyword()})
     total_processed = Integer()
     total_blocked = Integer()
     blocked = Boolean()
@@ -39,7 +39,7 @@ class Event(DocType):
     var_name = Keyword()
     date = Date()
     whitelisted = Boolean()
-    comments = Text(fields={'raw': Keyword()})
+    comments = String(fields={'raw': Keyword()})
     coords = GeoPoint()
 
     class Meta:
@@ -140,7 +140,6 @@ class Elastic(LogProvider):
         # This documented at https://elasticsearch-py.readthedocs.io/en/master/api.html#elasticsearch.Elasticsearch.search
         # search_type='count' has been deprecated in ES 2.0
         self.search.aggs.bucket('TEST', 'terms', field=field)
-        print("Field : %s" % field)
         for hit in self.search.execute(ignore_cache=True).aggregations['TEST']['buckets']:
             ret[hit['key']] = hit['doc_count']
         self.search = search
