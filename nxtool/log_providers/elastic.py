@@ -18,17 +18,23 @@ except ImportError:  # python3
 
 from elasticsearch import TransportError
 from elasticsearch_dsl import Search, Q
-from elasticsearch_dsl import DocType, Date, Boolean, String, Integer, Ip, GeoPoint, Keyword
+from elasticsearch_dsl import DocType, Date, Boolean, Integer, Ip, GeoPoint
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections
+
+try:
+    from elasticsearch_dsl import Text, Keyword
+except ImportError:  # oldversion of Elasticsearch
+    from elasticsearch_dsl import String as Text
+    from elasticsearch_dsl import String as Keyword
+
 
 from nxtool.log_providers import LogProvider
 
 class Event(DocType):
     ip = Ip()
-    server = String(fields={'raw': Keyword()})
+    coords = GeoPoint()
     learning = Boolean()
-    vers = String(fields={'raw': Keyword()})
     total_processed = Integer()
     total_blocked = Integer()
     blocked = Boolean()
@@ -39,8 +45,10 @@ class Event(DocType):
     var_name = Keyword()
     date = Date()
     whitelisted = Boolean()
-    comments = String(fields={'raw': Keyword()})
-    coords = GeoPoint()
+    server = Text(fields={'raw': Keyword()})
+    comments = Text(fields={'raw': Keyword()})
+    vers = Text(fields={'raw': Keyword()})
+
 
     class Meta:
         doc_type = 'events'
@@ -134,8 +142,8 @@ class Elastic(LogProvider):
         """
         search = self.search
         ret = dict()
-        if field in ['uri', 'vers', 'comments', 'server']:
-            field = ''.join((field, '.raw'))
+#        if field in ['uri', 'vers', 'comments', 'server']:
+#            field = ''.join((field, '.raw'))
         self.search = self.search.params(search_type='query_then_fetch')
         # This documented at https://elasticsearch-py.readthedocs.io/en/master/api.html#elasticsearch.Elasticsearch.search
         # search_type='count' has been deprecated in ES 2.0
