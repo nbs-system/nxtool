@@ -18,7 +18,7 @@ except ImportError:  # python3
 
 from elasticsearch import TransportError
 from elasticsearch_dsl import Search, Q
-from elasticsearch_dsl import DocType, Date, Boolean, String, Integer, Ip, GeoPoint
+from elasticsearch_dsl import DocType, Date, Boolean, Text, Integer, Ip, GeoPoint, Keyword
 from elasticsearch_dsl import Index
 from elasticsearch_dsl.connections import connections
 
@@ -26,20 +26,20 @@ from nxtool.log_providers import LogProvider
 
 class Event(DocType):
     ip = Ip()
-    server = String()
+    server = Text(fields={'raw': Keyword()})
     learning = Boolean()
-    vers = String()
+    vers = Text(fields={'raw': Keyword()})
     total_processed = Integer()
     total_blocked = Integer()
     blocked = Boolean()
-    cscore0 = String()
+    cscore0 = Keyword()
     score0 = Integer()
-    zone = String()
+    zone = Keyword()
     id = Integer()
-    var_name = String()
+    var_name = Keyword()
     date = Date()
     whitelisted = Boolean()
-    comments = String()
+    comments = Text(fields={'raw': Keyword()})
     coords = GeoPoint()
 
     class Meta:
@@ -134,8 +134,13 @@ class Elastic(LogProvider):
         """
         search = self.search
         ret = dict()
-        self.search = self.search.params(search_type="count")
+        if field in ['uri', 'vers', 'comments', 'server']:
+            field = ''.join((field, '.raw'))
+        self.search = self.search.params(search_type='query_then_fetch')
+        # This documented at https://elasticsearch-py.readthedocs.io/en/master/api.html#elasticsearch.Elasticsearch.search
+        # search_type='count' has been deprecated in ES 2.0
         self.search.aggs.bucket('TEST', 'terms', field=field)
+        print("Field : %s" % field)
         for hit in self.search.execute(ignore_cache=True).aggregations['TEST']['buckets']:
             ret[hit['key']] = hit['doc_count']
         self.search = search
