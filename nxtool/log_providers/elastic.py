@@ -25,8 +25,9 @@ from elasticsearch_dsl.connections import connections
 try:
     from elasticsearch_dsl import Text, Keyword
 except ImportError:  # oldversion of Elasticsearch
-    from elasticsearch_dsl import String as Text
-    from elasticsearch_dsl import String as Keyword
+    from elasticsearch_dsl import String
+    Text = String
+    Keyword = String
 
 
 from nxtool.log_providers import LogProvider
