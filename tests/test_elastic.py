@@ -90,3 +90,8 @@ class TestElasticImport(unittest.TestCase):
         time.sleep(5)
         self.assertEqual(self.dest.get_relevant_ids(['id']), {u'1302', u'42000227'})
         self.clean_es()
+
+    def test_get_top(self):
+        self.feed_es()
+        self.assertEqual(self.dest.get_top(['id']), {1302: 3, 42000227: 1})
+        self.clean_es()
