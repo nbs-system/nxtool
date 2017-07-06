@@ -19,7 +19,7 @@ except ImportError:  # python3
 from elasticsearch import TransportError
 from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl import DocType, Date, Boolean, Integer, Ip, GeoPoint
-from elasticsearch_dsl import Index
+from elasticsearch_dsl import Index, VERSION
 from elasticsearch_dsl.connections import connections
 
 try:
@@ -45,6 +45,7 @@ class Event(DocType):
     var_name = Keyword()
     date = Date()
     whitelisted = Boolean()
+    uri = Text(fields={'raw': Keyword()})
     server = Text(fields={'raw': Keyword()})
     comments = Text(fields={'raw': Keyword()})
     vers = Text(fields={'raw': Keyword()})
@@ -142,9 +143,14 @@ class Elastic(LogProvider):
         """
         search = self.search
         ret = dict()
-#        if field in ['uri', 'vers', 'comments', 'server']:
-#            field = ''.join((field, '.raw'))
-        self.search = self.search.params(search_type='query_then_fetch')
+
+        if field in ['uri', 'vers', 'comments', 'server']:
+            field = ''.join((field, '.raw'))
+
+        if VERSION < (5, 0, 0):
+            self.search = self.search.params(search_type='count')
+        else:
+            self.search = self.search.params(search_type='query_then_fetch')
         # This documented at https://elasticsearch-py.readthedocs.io/en/master/api.html#elasticsearch.Elasticsearch.search
         # search_type='count' has been deprecated in ES 2.0
         self.search.aggs.bucket('TEST', 'terms', field=field)
