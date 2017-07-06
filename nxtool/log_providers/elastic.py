@@ -46,9 +46,9 @@ class Event(DocType):
     date = Date()
     whitelisted = Boolean()
     uri = Text(fields={'raw': Keyword(index = 'not_analyzed')})
-    server = Text(fields={'raw': Keyword()})
-    comments = Text(fields={'raw': Keyword()})
-    vers = Text(fields={'raw': Keyword()})
+    server = Text(fields={'raw': Keyword(index = 'not_analyzed')})
+    comments = Text(fields={'raw': Keyword(index = 'not_analyzed')})
+    vers = Text(fields={'raw': Keyword(index = 'not_analyzed')})
 
 
     class Meta:
