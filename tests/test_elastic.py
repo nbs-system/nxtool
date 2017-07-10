@@ -82,7 +82,7 @@ class TestElasticImport(unittest.TestCase):
         dest.stop()
         dest.initialize_search()
         dest.minimum_occurences = 0
-        dest.pourcentage = 0
+        dest.percentage = 0
         time.sleep(5)
         self.assertEqual(dest.get_relevant_ids(['id']), {u'1302', u'42000227'})
         self.assertEqual(dest.get_top('id'), {1302: 3, 42000227: 1})
