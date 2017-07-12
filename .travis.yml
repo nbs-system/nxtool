@@ -38,13 +38,13 @@ install:
 script:
   - 'case "${ES_VERSION}" in
     5.4.1|5.3.3)
-      pip install  "pip install -r requirements-v5.txt" || travis_terminate 1
+      pip install -r requirements-v5.txt || travis_terminate 1
       ;;
     2.4.5)
-      pip install  "pip install -r requirements-v2.txt" || travis_terminate 1
+      pip install -r requirements-v2.txt || travis_terminate 1
       ;;
     1.7.6)
-      pip install  "pip install -r requirements-v1.txt"|| travis_terminate 1
+      pip install -r requirements-v1.txt || travis_terminate 1
       ;;
     *)
       travis_terminate 1
