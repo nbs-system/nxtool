@@ -13,7 +13,7 @@ from nxtool.log_providers import LogProvider
 
 class FlatFile(LogProvider):
     def __init__(self, fname=None):
-        super(LogProvider, self)
+        super(Elastic, self)
 
         self.minimum_occurrences = 250
         self.percentage = 10
