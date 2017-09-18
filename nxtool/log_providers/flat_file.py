@@ -5,7 +5,6 @@ import zipfile
 import tarfile
 import re
 import logging
-import sys
 
 from nxapi.nxlog import parse_nxlog
 
