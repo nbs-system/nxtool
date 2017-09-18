@@ -192,7 +192,7 @@ Types in the used elasticsearch entries are enforced:
 
 ```
     ip = Ip
-    coords = GeoPoint:
+    coords = GeoPoint
     learning = Boolean
     total_processed = Integer
     total_blocked = Integer
@@ -209,5 +209,8 @@ Types in the used elasticsearch entries are enforced:
     comments = Text
     vers = Text
 ```
+First term is the key used in NAXSI_FMT and second term is the defined ElasticSearch type. Text is used as a backward
+compatible version of Keyword. We may drop the support of old elasticsearch version in the near future and replace
+Text with Keyword.
 
-It is noteworthy that one request might violate multiple core rule hence lead to multiple entries in elastic search.
+It is noteworthy that one request might violate multiple core rule and lead to multiple entries in ElasticSearch.
