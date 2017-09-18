@@ -5,6 +5,7 @@ import zipfile
 import tarfile
 import re
 import logging
+import sys
 
 from nxapi.nxlog import parse_nxlog
 
@@ -27,7 +28,7 @@ class FlatFile(LogProvider):
         try:
             ftype = mimetypes.guess_all_extensions(self.fname)[0]
         except AttributeError:  # `self.fname` is None
-            self.__transform_logs(fileinput.input(self.fname))
+            self.__transform_logs(fileinput.input("-"))
         except IndexError:  # `self.fname` has no guessable mimtype
             self.__transform_logs(fileinput.input(self.fname))
         else:
